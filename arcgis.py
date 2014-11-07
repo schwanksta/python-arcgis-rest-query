@@ -1,5 +1,4 @@
 import requests
-import urlparse
 
 def urljoin(*args):
     """
