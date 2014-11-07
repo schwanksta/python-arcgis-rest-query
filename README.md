@@ -4,7 +4,7 @@ A simple library that can download a layer from a map in an
 ArcGIS web service and convert it to something useful,
 like GeoJSON.
 
-TODO: Everything.
+## TODO: Everything.
 - Download all data (loop through with offsets until we get all the data)
 - Output to a useful format (right now I'm just returnin the raw json)
 
