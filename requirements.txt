@@ -1,4 +1,2 @@
-GDAL==1.11.1
-czipfile==1.0.0
 requests==2.4.3
 wsgiref==0.1.2

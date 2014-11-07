@@ -1,9 +1,4 @@
 import requests
-from zipfile import ZipFile
-from cStringIO import StringIO
-from osgeo import ogr
-import tempfile
-
 
 def urljoin(*args):
     """
@@ -44,28 +39,12 @@ class ArcGIS:
             "query"
             )
 
-    def get_kml(self, layer, where="1 = 1", fields="*", return_geometry=True):
-        return ZipFile(StringIO(requests.get(self._build_request(layer),
+    def get(self, layer, where="1 = 1", fields="*", return_geometry=True):
+        return requests.get(self._build_request(layer),
             params = {
                 'where': where,
-                'outFields': fields,
+                'fields': fields,
                 'returnGeometry': return_geometry,
-                'f': "kmz"
-            }).content), "r").open('doc.kml', 'r').read()
-
-    def get(self, layer, where="1 = 1", fields="*", return_geometry=True):
-        drv = ogr.GetDriverByName('KML')
-        kml = self.get_kml(layer, where, fields, return_geometry)
-        temp = tempfile.NamedTemporaryFile()
-        temp.write(kml)
-        temp.flush()
-
-        datasource = drv.Open(temp.name)
-        for layer in datasource:
-            for feat in layer:
-                print feat.ExportToJson()
-
-        
-
-
+                'f': "pjson"
+            }).json()
 
