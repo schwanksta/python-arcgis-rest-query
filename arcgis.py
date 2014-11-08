@@ -1,4 +1,11 @@
+import json
 import requests
+from zipfile import ZipFile
+from cStringIO import StringIO
+from osgeo import ogr
+import tempfile
+from BeautifulSoup import BeautifulSoup
+
 
 def urljoin(*args):
     """
@@ -39,12 +46,57 @@ class ArcGIS:
             "query"
             )
 
-    def get(self, layer, where="1 = 1", fields="*", return_geometry=True):
-        return requests.get(self._build_request(layer),
+    def get_kml(self, layer, where="1 = 1", fields="*", return_geometry=True):
+        """
+        Gets the KMZ file from ArcGIS, unzips it in memory and returns the 
+        contents of the KML file inside.
+        """
+        return ZipFile(StringIO(requests.get(self._build_request(layer),
             params = {
                 'where': where,
-                'fields': fields,
+                'outFields': fields,
                 'returnGeometry': return_geometry,
-                'f': "pjson"
-            }).json()
+                'f': "kmz"
+            }).content), "r").open('doc.kml', 'r').read()
 
+    def _table_to_properties(self, obj):
+        """
+        Takes the HTML description table in the JSON and 
+        parses it into a real object we can replace the 
+        HTML-infested. version with.
+        """
+        html = obj.get("properties").get("Description")
+        soup = BeautifulSoup(html)
+        # The first set of <td> gives you gibberish.s
+        tds = map(lambda x: x.getText(), soup.findAll("td")[1:])
+        ret = {}
+        # Split up the tds into pairs and zip em together as dicts.
+        for pair in zip(tds[::2], tds[1::2]):
+            ret.update({pair[0]: pair[1]})
+        return ret
+
+
+    def get(self, layer, where="1 = 1", fields="*", return_geometry=True):
+        """
+        Gets a layer and returns it as honest to God GeoJSON.
+
+        We take their KML and do some transformations to make it useful.
+        """
+
+        drv = ogr.GetDriverByName('KML')
+        kml = self.get_kml(layer, where, fields, return_geometry)
+        temp = tempfile.NamedTemporaryFile()
+        temp.write(kml)
+        temp.flush()
+
+        datasource = drv.Open(temp.name)
+        features = []
+        for layer in datasource:
+            for feat in layer:
+                jsobj = json.loads(feat.ExportToJson())
+                jsobj["properties"] = self._table_to_properties(jsobj)
+                features.append(jsobj)
+        return {
+            'type': "FeatureCollection",
+            'features': features
+        }

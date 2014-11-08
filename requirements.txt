@@ -1,2 +1,9 @@
+<<<<<<< HEAD
+=======
+BeautifulSoup==3.2.1
+GDAL==1.11.1
+argparse==1.2.1
+czipfile==1.0.0
+>>>>>>> kmz
 requests==2.4.3
 wsgiref==0.1.2

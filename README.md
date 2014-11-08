@@ -4,9 +4,8 @@ A simple library that can download a layer from a map in an
 ArcGIS web service and convert it to something useful,
 like GeoJSON.
 
-## TODO: Everything.
+## TODO:
 - Download all data (loop through with offsets until we get all the data)
-- Output to a useful format (right now I'm just returnin the raw json)
 
 Usage:
 
@@ -16,6 +15,9 @@ Usage:
 >>> layer_id = 1
 >>> arc.get(layer_id)
 ```
+Right now it will only download up to 1000 features from the layer, but it does return it as real,
+honest-to-God GeoJSON.
+
 This assumes you've inspected your ArcGIS services endpoint to know what to look for.
 ArcGIS DOES publish json files enumerating the endpoints you can query, so autodiscovery
 could be possible further down the line.
