@@ -63,7 +63,7 @@ class ArcGIS:
         """
         Takes the HTML description table in the JSON and 
         parses it into a real object we can replace the 
-        HTML-infested. version with.
+        HTML-infested version with.
         """
         html = obj.get("properties").get("Description")
         soup = BeautifulSoup(html)
@@ -96,6 +96,7 @@ class ArcGIS:
                 jsobj = json.loads(feat.ExportToJson())
                 jsobj["properties"] = self._table_to_properties(jsobj)
                 features.append(jsobj)
+
         return {
             'type': "FeatureCollection",
             'features': features
