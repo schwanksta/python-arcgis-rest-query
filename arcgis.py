@@ -42,16 +42,18 @@ class ArcGIS:
             self.folder,
             self.map,
             "MapServer",
-            layer, 
-            "query"
+            layer
             )
 
-    def get_kml(self, layer, where="1 = 1", fields="*", return_geometry=True):
+    def _build_query_request(self, layer):
+        return urljoin(self._build_request(layer), "query")
+
+    def get_kml(self, layer, where="1 = 1", fields=[], return_geometry=True):
         """
         Gets the KMZ file from ArcGIS, unzips it in memory and returns the 
         contents of the KML file inside.
         """
-        return ZipFile(StringIO(requests.get(self._build_request(layer),
+        return ZipFile(StringIO(requests.get(self._build_query_request(layer),
             params = {
                 'where': where,
                 'outFields': fields,
@@ -68,20 +70,29 @@ class ArcGIS:
         html = obj.get("properties").get("Description")
         soup = BeautifulSoup(html)
         # The first set of <td> gives you gibberish.s
-        tds = map(lambda x: x.getText(), soup.findAll("td")[1:])
+        tds = map(lambda x: x.getText(), soup.findAll("td"))
         ret = {}
         # Split up the tds into pairs and zip em together as dicts.
         for pair in zip(tds[::2], tds[1::2]):
             ret.update({pair[0]: pair[1]})
         return ret
 
+    def get_descriptor_for_layer(self, layer):
+        return requests.get(self._build_request(layer), params={'f': 'pjson'}).json()
 
-    def get(self, layer, where="1 = 1", fields="*", return_geometry=True):
+    def enumerate_layer_fields(self, layer):
+        descriptor = self.get_descriptor_for_layer(layer)
+        return [field['name'] for field in descriptor['fields']]
+
+    def get(self, layer, where="1 = 1", fields=[], return_geometry=True):
         """
         Gets a layer and returns it as honest to God GeoJSON.
 
         We take their KML and do some transformations to make it useful.
         """
+
+        # By default we grab all of the layer fields 
+        fields = fields or self.enumerate_layer_fields(layer)
 
         drv = ogr.GetDriverByName('KML')
         kml = self.get_kml(layer, where, fields, return_geometry)
