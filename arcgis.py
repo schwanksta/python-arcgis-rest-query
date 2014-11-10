@@ -56,7 +56,7 @@ class ArcGIS:
         return ZipFile(StringIO(requests.get(self._build_query_request(layer),
             params = {
                 'where': where,
-                'outFields': fields,
+                'outFields': ", ".join(fields),
                 'returnGeometry': return_geometry,
                 'f': "kmz"
             }).content), "r").open('doc.kml', 'r').read()
@@ -69,8 +69,8 @@ class ArcGIS:
         """
         html = obj.get("properties").get("Description")
         soup = BeautifulSoup(html)
-        # The first set of <td> gives you gibberish.s
-        tds = map(lambda x: x.getText(), soup.findAll("td"))
+        # For some reason there's a nested table, and that has the info.
+        tds = map(lambda x: x.getText(), soup.findAll("table")[1].findAll("td"))
         ret = {}
         # Split up the tds into pairs and zip em together as dicts.
         for pair in zip(tds[::2], tds[1::2]):
