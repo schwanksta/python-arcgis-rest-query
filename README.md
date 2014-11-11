@@ -21,7 +21,7 @@ honest-to-God GeoJSON.
 You can also use the included arcgis-get utility, like so:
 
 ```bash
-./arcgis-get.py http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 > ~/Desktop/railraods.json
+./arcgis-get.py http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 > ~/Desktop/railroads.json
 ```
 
 This will download a Railroads layer from the US Census' TIGER dataset.
