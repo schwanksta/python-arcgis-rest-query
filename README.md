@@ -41,6 +41,7 @@ Then, we could re-do the previous query:
 ```
 
 And get some glorious mapped output: 
+![geojsonio-example](https://cloud.githubusercontent.com/assets/20067/4998565/6be2e4f8-69a7-11e4-8aa1-d735bd1a7dac.png)
 
 
 This assumes you've inspected your ArcGIS services endpoint to know what to look for.
