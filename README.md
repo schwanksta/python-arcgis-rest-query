@@ -4,10 +4,10 @@ A simple library that can download a layer from a map in an
 ArcGIS web service and convert it to something useful,
 like GeoJSON.
 
-### TODO:
+### TODO
 - Download all data (loop through with offsets until we get all the data)
 
-## Usage:
+## Usage
 
 ```python
 >>> import arcgis
