@@ -63,4 +63,4 @@ and display it on geojson.io, you could do:
 
 ## Potential pitfalls:
 
-Since you can only query in batches of 1,000, and sometimes these are millions of records, these operations could take a long time. Currently there's no status indicator on the CLI, so run --count_only first to see how long you might wait.
+Since you can only query in batches of 1,000, and sometimes these are millions of records, these operations could take a long time. Currently there's no status indicator on the CLI, so run `--count_only` first to see how long you might wait.
