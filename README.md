@@ -43,6 +43,13 @@ Then, we could re-do the previous query:
 And get some glorious mapped output: 
 ![geojsonio-example](https://cloud.githubusercontent.com/assets/20067/4998565/6be2e4f8-69a7-11e4-8aa1-d735bd1a7dac.png)
 
+You can also do WHERE filtering from the command line. For example, if you want to get the Census' state shape for just Florida
+and display it on geojson.io, you could do:
+
+```bash
+./arcgis-get.py --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 28 | geojsonio
+```
+
 
 This assumes you've inspected your ArcGIS services endpoint to know what to look for.
 ArcGIS DOES publish json files enumerating the endpoints you can query, so autodiscovery
