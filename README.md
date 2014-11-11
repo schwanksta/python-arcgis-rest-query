@@ -21,7 +21,7 @@ could be possible further down the line.
 
 You can also use the included arcgis-get utility, like so:
 
-*Note: this query will take a long time, so maybe try one of the examples below?*
+*Note: this query will take a long time, so maybe try one of the other examples below?*
 ```bash
 ./arcgis-get.py http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 > ~/Desktop/railroads.geojson
 ```
