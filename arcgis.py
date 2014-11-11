@@ -49,7 +49,7 @@ class ArcGIS:
     def _build_query_request(self, layer):
         return urljoin(self._build_request(layer), "query")
 
-    def get_json(self, layer, where="1 = 1", fields=[], srid='4326'):
+    def get_json(self, layer, where="1 = 1", fields=[], count_only=False, srid='4326'):
         """
         Gets the JSON file from ArcGIS
         """
@@ -60,7 +60,8 @@ class ArcGIS:
                 'returnGeometry': True,
                 'outSR': srid,
                 'f': "pjson",
-                'orderByFields': "OBJECTID"
+                'orderByFields': "OBJECTID",
+                'returnCountOnly': count_only
             }).json()
 
     def _parse_esri_point(self, geom):
@@ -115,20 +116,34 @@ class ArcGIS:
         descriptor = self.get_descriptor_for_layer(layer)
         return [field['name'] for field in descriptor['fields']]
 
-    def get(self, layer, where="1 = 1", fields=[], srid='4326'):
+    def get(self, layer, where="1 = 1", fields=[], count_only=False, srid='4326'):
         """
         Gets a layer and returns it as honest to God GeoJSON.
 
         We take their KML and do some transformations to make it useful.
         """
-
+        base_where = where
         # By default we grab all of the layer fields 
         fields = fields or self.enumerate_layer_fields(layer)
 
-        jsobj = self.get_json(layer, where, fields)
+        jsobj = self.get_json(layer, where, fields, count_only, srid)
+
+        if count_only:
+            return jsobj.get('count')
+
         geom_parser = self._determine_geom_parser(jsobj.get('geometryType'))
+
+        features = []
+        while True:
+            features += [self.esri_to_geojson(feat, geom_parser) for feat in jsobj.get('features')]
+            if not jsobj.get('exceededTransferLimit'):
+                break
+            where = "OBJECTID > %s" % features[-1]['properties'].get('OBJECTID')
+            if base_where != "1 = 1":
+                where += " AND %s" % where
+            jsobj = self.get_json(layer, where, fields, count_only, srid)
 
         return {
             'type': "FeatureCollection",
-            'features': [self.esri_to_geojson(feat, geom_parser) for feat in jsobj.get('features')]
+            'features': features
         }
