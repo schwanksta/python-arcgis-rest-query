@@ -17,6 +17,8 @@ This assumes you've inspected your ArcGIS services endpoint to know what to look
 ArcGIS DOES publish json files enumerating the endpoints you can query, so autodiscovery
 could be possible further down the line.
 
+# From the command line
+
 You can also use the included arcgis-get utility, like so:
 
 ```bash
