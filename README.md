@@ -25,6 +25,8 @@ You can also use the included arcgis-get utility, like so:
 ./arcgis-get.py http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 > ~/Desktop/railroads.geojson
 ```
 
+Note: that query will take a long time, so maybe try one of the examples below?
+
 This will download a Railroads layer from the US Census' TIGER dataset.
 
 ## Piping to geojsonio
