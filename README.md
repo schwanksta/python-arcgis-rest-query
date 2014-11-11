@@ -21,13 +21,20 @@ could be possible further down the line.
 
 You can also use the included arcgis-get utility, like so:
 
+*Note: this query will take a long time, so maybe try one of the examples below?*
 ```bash
 ./arcgis-get.py http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 > ~/Desktop/railroads.geojson
 ```
 
-Note: that query will take a long time, so maybe try one of the examples below?
+This will download a Railroads layer from the US Census' TIGER dataset. 
 
-This will download a Railroads layer from the US Census' TIGER dataset.
+The size of that file brings up a good point: you should run --count_only before downloading an entire dataset, so you can see what you're in store for. 
+
+```bash
+$ ./arcgis-get.py http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 --count_only
+182149
+```
+Since we go in batches of 1,000, you're in for over 180 queries to the API.
 
 ## Piping to geojsonio
 
@@ -53,3 +60,7 @@ and display it on geojson.io, you could do:
 ./arcgis-get.py --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 28 | geojsonio
 ```
 ![florida](https://cloud.githubusercontent.com/assets/20067/5001808/ee233ff6-69c7-11e4-9c3e-245aba847bb5.png)
+
+## Potential pitfalls:
+
+Since you can only query in batches of 1,000, and sometimes these are millions of records, these operations could take a long time. Currently there's no status indicator on the CLI, so run --count_only first to see how long you might wait.
