@@ -120,10 +120,11 @@ class ArcGIS:
         """
         Gets a layer and returns it as honest to God GeoJSON.
 
-        We take their KML and do some transformations to make it useful.
+        WHERE 1 = 1 causes us to get everything.
         """
         base_where = where
-        # By default we grab all of the layer fields 
+
+        # By default we grab all of the fields 
         fields = fields or self.enumerate_layer_fields(layer)
 
         jsobj = self.get_json(layer, where, fields, count_only, srid)
