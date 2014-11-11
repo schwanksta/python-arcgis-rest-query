@@ -68,9 +68,20 @@ class ArcGIS:
         HTML-infested version with.
         """
         html = obj.get("properties").get("Description")
+        
+        if html == '':
+            # Sometimes there is no description HTML, so we pass
+            # the existing properties object back out.
+            return obj.get("properties")
+
         soup = BeautifulSoup(html)
-        # For some reason there's a nested table, and that has the info.
-        tds = map(lambda x: x.getText(), soup.findAll("table")[1].findAll("td"))
+        # For some reason sometimes there's a nested table, and that has the info.
+        tables = soup.findAll("table")
+        if len(tables) > 1:
+            table = tables[1]
+        else:
+            table = tables[0]
+        tds = map(lambda x: x.getText(), table.findAll("td"))
         ret = {}
         # Split up the tds into pairs and zip em together as dicts.
         for pair in zip(tds[::2], tds[1::2]):
