@@ -32,7 +32,9 @@ class ArcGIS:
         self._layer_descriptor_cache = {}
         self._geom_parsers = {
             'esriGeometryPoint': self._parse_esri_point,
-            'esriGeometryMultipoint': self._parse_esri_multipoint
+            'esriGeometryMultipoint': self._parse_esri_multipoint,
+            'esriGeometryPolyline': self._parse_esri_polyline,
+            'esriGeometryPolygon': self._parse_esri_polygon
         }
 
     def _build_request(self, layer):
@@ -69,6 +71,7 @@ class ArcGIS:
                 geom.get('y')
             ]
         }
+
     def _parse_esri_multipoint(self, geom):
         return {
             "type": "MultiPoint",
@@ -76,10 +79,16 @@ class ArcGIS:
         }
 
     def _parse_esri_polyline(self, geom):
-        pass
-    def _parse_esri_polygon(self, geom):
-        pass
+        return {
+            "type": "MultiLineString",
+            "coordinates": geom.get('paths')
+        }    
 
+    def _parse_esri_polygon(self, geom):
+        return {
+            "type": "Polygon",
+            "coordinates": geom.get('rings')
+        }    
     def _determine_geom_parser(self, type):
         return self._geom_parsers.get(type)
 
