@@ -28,7 +28,7 @@ You can also use the included arcgis-get utility, like so:
 
 This will download a Railroads layer from the US Census' TIGER dataset. 
 
-The size of that file brings up a good point: you should run --count_only before downloading an entire dataset, so you can see what you're in store for. 
+The size of that file brings up a good point: you should run `--count_only` before downloading an entire dataset, so you can see what you're in store for. 
 
 ```bash
 $ ./arcgis-get.py http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 --count_only
