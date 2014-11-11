@@ -15,8 +15,10 @@ like GeoJSON.
 >>> layer_id = 1
 >>> arc.get(layer_id)
 ```
-Right now it will only download up to 1000 features from the layer, but it does return it as real,
-honest-to-God GeoJSON.
+
+This assumes you've inspected your ArcGIS services endpoint to know what to look for.
+ArcGIS DOES publish json files enumerating the endpoints you can query, so autodiscovery
+could be possible further down the line.
 
 You can also use the included arcgis-get utility, like so:
 
@@ -49,8 +51,4 @@ and display it on geojson.io, you could do:
 ```bash
 ./arcgis-get.py --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 28 | geojsonio
 ```
-
-
-This assumes you've inspected your ArcGIS services endpoint to know what to look for.
-ArcGIS DOES publish json files enumerating the endpoints you can query, so autodiscovery
-could be possible further down the line.
+![florida](https://cloud.githubusercontent.com/assets/20067/5001808/ee233ff6-69c7-11e4-9c3e-245aba847bb5.png)
