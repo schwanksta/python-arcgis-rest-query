@@ -120,7 +120,9 @@ class ArcGIS:
         """
         Gets a layer and returns it as honest to God GeoJSON.
 
-        WHERE 1 = 1 causes us to get everything.
+        WHERE 1 = 1 causes us to get everything. We use OBJECTID in the WHERE clause
+        to paginate, so don't use OBJECTID in your WHERE clause unless you're going to 
+        query under 1000 objects.
         """
         base_where = where
 
@@ -140,7 +142,7 @@ class ArcGIS:
             if not jsobj.get('exceededTransferLimit'):
                 break
             where = "OBJECTID > %s" % features[-1]['properties'].get('OBJECTID')
-            if base_where != "1 = 1":
+            if base_where != "1 = 1" :
                 where += " AND %s" % where
             jsobj = self.get_json(layer, where, fields, count_only, srid)
 
