@@ -19,7 +19,12 @@ could be possible further down the line.
 
 ## Installation
 
-*I should package this on pip soon enough, but for now...*
+The easitest way:
+```bash
+pip install arcgis-rest-query
+```
+From source:
+
 ```bash
 # Create a virtual environment (pip install virtualenv if you don't have it already)
 virtualenv python-arcgis-rest-query
