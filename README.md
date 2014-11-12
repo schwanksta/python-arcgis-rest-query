@@ -17,7 +17,20 @@ This assumes you've inspected your ArcGIS services endpoint to know what to look
 ArcGIS DOES publish json files enumerating the endpoints you can query, so autodiscovery
 could be possible further down the line.
 
-# From the command line
+## Installation
+
+*I should package this on pip soon enough, but for now...*
+```bash
+# Create a virtual environment (pip install virtualenv if you don't have it already)
+virtualenv python-arcgis-rest-query
+cd python-arcgis-rest-query
+. bin/activate
+git clone git@github.com:Schwanksta/python-arcgis-rest-query repo
+cd repo
+pip install -r requirements.txt
+```
+
+## From the command line
 
 You can also use the included arcgis-get utility, like so:
 
