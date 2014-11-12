@@ -1,12 +1,6 @@
 import json
 import requests
 
-def urljoin(*args):
-    """
-    Kinda ghetto.
-    """
-    return "/".join(map(lambda x: str(x).rstrip('/'), args))
-
 class ArcGIS:
     """
     A class that can download a layer from a map in an 
@@ -49,21 +43,6 @@ class ArcGIS:
     def _build_query_request(self, layer):
         return urljoin(self._build_request(layer), "query")
 
-    def get_json(self, layer, where="1 = 1", fields=[], count_only=False, srid='4326'):
-        """
-        Gets the JSON file from ArcGIS
-        """
-        return requests.get(self._build_query_request(layer),
-            params = {
-                'where': where,
-                'outFields': ", ".join(fields),
-                'returnGeometry': True,
-                'outSR': srid,
-                'f': "pjson",
-                'orderByFields': "OBJECTID",
-                'returnCountOnly': count_only
-            }).json()
-
     def _parse_esri_point(self, geom):
         return {
             "type": "Point",
@@ -89,7 +68,8 @@ class ArcGIS:
         return {
             "type": "Polygon",
             "coordinates": geom.get('rings')
-        }    
+        }
+ 
     def _determine_geom_parser(self, type):
         return self._geom_parsers.get(type)
 
@@ -100,9 +80,25 @@ class ArcGIS:
             "geometry": geom_parser(obj.get('geometry'))
         }
 
+    def get_json(self, layer, where="1 = 1", fields=[], count_only=False, srid='4326'):
+        """
+        Gets the JSON file from ArcGIS
+        """
+        return requests.get(self._build_query_request(layer),
+            params = {
+                'where': where,
+                'outFields': ", ".join(fields),
+                'returnGeometry': True,
+                'outSR': srid,
+                'f': "pjson",
+                'orderByFields': "OBJECTID",
+                'returnCountOnly': count_only
+            }).json()
+
     def get_descriptor_for_layer(self, layer):
         """
-        Returns the standard JSON descriptor for the layer.
+        Returns the standard JSON descriptor for the layer. There is a lot of
+        usefule information in there.
         """
         if not self._layer_descriptor_cache.has_key(layer):
             response = requests.get(self._build_request(layer), params={'f': 'pjson'})
@@ -126,23 +122,33 @@ class ArcGIS:
         """
         base_where = where
 
-        # By default we grab all of the fields 
+        # By default we grab all of the fields. Technically I think
+        # we can just do "*" for all fields, but I found this was buggy in 
+        # the KMZ mode. I'd rather be explicit. 
         fields = fields or self.enumerate_layer_fields(layer)
 
         jsobj = self.get_json(layer, where, fields, count_only, srid)
 
+        # Sometimes you just want to know how far there is to go.
         if count_only:
             return jsobj.get('count')
 
+        # From what I can tell, the entire layer tends to be of the same type,
+        # so we only have to determine the parsing function once.
         geom_parser = self._determine_geom_parser(jsobj.get('geometryType'))
 
         features = []
+        # We always want to run once, and then break out as soon as we stop
+        # getting exceededTransferLimit.
         while True:
             features += [self.esri_to_geojson(feat, geom_parser) for feat in jsobj.get('features')]
             if not jsobj.get('exceededTransferLimit'):
                 break
+            # If we've hit the transfer limit we offset by the last OBJECTID
+            # returned and keep moving along. 
             where = "OBJECTID > %s" % features[-1]['properties'].get('OBJECTID')
             if base_where != "1 = 1" :
+                # If we have another WHERE filter we needed to tack that back on.
                 where += " AND %s" % where
             jsobj = self.get_json(layer, where, fields, count_only, srid)
 
@@ -150,3 +156,9 @@ class ArcGIS:
             'type': "FeatureCollection",
             'features': features
         }
+
+def urljoin(*args):
+    """
+    There's probably a better way of handling this.
+    """
+    return "/".join(map(lambda x: str(x).rstrip('/'), args))
