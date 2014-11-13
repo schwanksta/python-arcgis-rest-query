@@ -121,7 +121,7 @@ class ArcGIS:
         query under 1000 objects.
         """
         base_where = where
-
+        print base_where
         # By default we grab all of the fields. Technically I think
         # we can just do "*" for all fields, but I found this was buggy in 
         # the KMZ mode. I'd rather be explicit. 
@@ -149,7 +149,8 @@ class ArcGIS:
             where = "OBJECTID > %s" % features[-1]['properties'].get('OBJECTID')
             if base_where != "1 = 1" :
                 # If we have another WHERE filter we needed to tack that back on.
-                where += " AND %s" % where
+                where += " AND %s" % base_where
+            print where
             jsobj = self.get_json(layer, where, fields, count_only, srid)
 
         return {
