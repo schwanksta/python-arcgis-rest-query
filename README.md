@@ -1,3 +1,4 @@
+[![PyPI version](https://badge.fury.io/py/arcgis-rest-query.svg)](http://badge.fury.io/py/arcgis-rest-query) ![travis-ci status](https://travis-ci.org/Schwanksta/python-arcgis-rest-query.svg?branch=master)
 # ArcGIS REST Query 
 
 A simple library that can download a layer from a map in an 
