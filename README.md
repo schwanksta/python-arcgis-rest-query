@@ -8,9 +8,10 @@ like GeoJSON.
 
 ```python
 >>> import arcgis
->>> arc = arcgis.ArcGIS("http://www.pathtomapserver:6080/", "FOLDER_OF_PROJECTS", "MAP_DATA_I_WANT")
->>> layer_id = 1
->>> arc.get(layer_id)
+>>> source = "http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Congressional_Districts/FeatureServer"
+>>> arc = arcgis.ArcGIS(source)
+>>> layer_id = 0
+>>> shapes = arc.get(layer_id, "STATE_ABBR='IN'")
 ```
 
 This assumes you've inspected your ArcGIS services endpoint to know what to look for.
@@ -41,15 +42,15 @@ You can also use the included arcgis-get utility, like so:
 
 *Note: this query will take a long time, so maybe try one of the other examples below?*
 ```bash
-arcgis-get http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 > ~/Desktop/railroads.geojson
+arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 9 > ~/Desktop/railroads.geojson
 ```
 
-This will download a Railroads layer from the US Census' TIGER dataset. 
+This will download a Railroads layer from the US Census' TIGER dataset.
 
 The size of that file brings up a good point: you should run `--count_only` before downloading an entire dataset, so you can see what you're in store for. 
 
 ```bash
-$ arcgis-get http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 --count_only
+$ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 9 --count_only
 182149
 ```
 Since we go in batches of 1,000, you're in for over 180 queries to the API.
@@ -65,7 +66,7 @@ npm install -g geojsonio-cli
 Then, we could re-do the previous query:
 
 ```bash
-arcgis-get http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 9 | geojsonio
+arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 9 | geojsonio
 ```
 
 And get some glorious mapped output: 
@@ -75,7 +76,7 @@ You can also do WHERE filtering from the command line. For example, if you want 
 and display it on geojson.io, you could do:
 
 ```bash
-arcgis-get --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/ Basemaps CommunityTIGER 28 | geojsonio
+arcgis-get --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 28 | geojsonio
 ```
 ![florida](https://cloud.githubusercontent.com/assets/20067/5001808/ee233ff6-69c7-11e4-9c3e-245aba847bb5.png)
 

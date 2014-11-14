@@ -10,19 +10,18 @@ class ArcGIS:
     Usage:
 
     >>> import arcgis
-    >>> arc = arcgis.ArcGIS("http://www.pathtomapserver:6080/", "FOLDER_OF_PROJECTS", "MAP_DATA_I_WANT")
-    >>> layer_id = 1
-    >>> arc.get(layer_id)
+    >>> source = "http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Congressional_Districts/FeatureServer"
+    >>> arc = arcgis.ArcGIS(source)
+    >>> layer_id = 0
+    >>> shapes = arc.get(layer_id, "STATE_ABBR='IN'")
 
     This assumes you've inspected your ArcGIS services endpoint to know what to look for.
     ArcGIS DOES publish json files enumerating the endpoints you can query, so autodiscovery
     could be possible further down the line.
 
     """
-    def __init__(self, base_url, folder, map_name):
-        self.base_url=base_url
-        self.folder=folder
-        self.map=map_name
+    def __init__(self, url):
+        self.url=url
         self._layer_descriptor_cache = {}
         self._geom_parsers = {
             'esriGeometryPoint': self._parse_esri_point,
@@ -32,13 +31,7 @@ class ArcGIS:
         }
 
     def _build_request(self, layer):
-        return urljoin(self.base_url,
-            "arcgis/rest/services", 
-            self.folder,
-            self.map,
-            "MapServer",
-            layer
-            )
+        return urljoin(self.url, layer)
 
     def _build_query_request(self, layer):
         return urljoin(self._build_request(layer), "query")
