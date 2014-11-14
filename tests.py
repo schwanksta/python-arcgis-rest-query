@@ -29,9 +29,14 @@ class ArcGISTest(unittest.TestCase):
 
     def test_field_filter(self):
         districts = ArcGIS("http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Congressional_Districts/FeatureServer")
-        features = districts.get(0, where="STATE_ABBR = 'IN'", fields=['OBJECTID'])
+        # How many fields are there in the layer?
+        num_fields = districts.enumerate_layer_fields(0)
+        self.assertEqual(len(num_fields), 12)
         # We should only have one property, OBJECTID.
+        features = districts.get(0, where="STATE_ABBR = 'IN'", fields=['OBJECTID'])
         self.assertEqual(len(features.get('features')[0].get('properties')), 1)
+        
+
 
 if __name__ == '__main__':
     unittest.main()
