@@ -27,5 +27,11 @@ class ArcGISTest(unittest.TestCase):
         # Make sure a value that should be there is ther.
         self.assertEqual(features.get('features')[0].get('properties').get('STATE_ABBR'), 'IN')
 
+    def test_field_filter(self):
+        districts = ArcGIS("http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Congressional_Districts/FeatureServer")
+        features = districts.get(0, where="STATE_ABBR = 'IN'", fields=['OBJECTID'])
+        # We should only have one property, OBJECTID.
+        self.assertEqual(len(features.get('features')[0].get('properties')), 1)
+
 if __name__ == '__main__':
     unittest.main()
