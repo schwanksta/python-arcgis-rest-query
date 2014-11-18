@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
 	if len(args.layer) > 1:
 		if args.count_only:
-			print "Sorry, you can't run a county on multiple layers currently."
+			print "Sorry, you can't run a count on multiple layers currently."
 		else:
 			print json.dumps(arc.getMultiple(args.layer, where=args.where, layer_name_field=args.layer_name_field))
 	else:
