@@ -35,6 +35,12 @@ class ArcGISTest(unittest.TestCase):
         # We should only have one property, OBJECTID.
         features = districts.get(0, where="STATE_ABBR = 'IN'", fields=['OBJECTID'])
         self.assertEqual(len(features.get('features')[0].get('properties')), 1)
+
+    def test_multiple(self):
+        districts = ArcGIS("http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer")
+        # Gets 114th and 113th congressional districts for hawaii.
+        features = districts.getMultiple([0, 12], where="STATE = 15")
+        self.assertEqual(len(features.get('features')), 4)
         
 
 
