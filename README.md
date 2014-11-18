@@ -52,7 +52,7 @@ You should run `--count_only` before downloading an entire dataset, so you can s
 $ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer 0 --count_only
 444
 ```
-The utilitiy downloads in batches of 1000, so while this will only need to hit the API once, the resultying file would be rather large.
+The utilitiy downloads in batches of 1000, so while this will only need to hit the API once, the resulting file would be rather large.
 
 # API
 ## Constructor
