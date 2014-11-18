@@ -21,7 +21,7 @@ could be possible further down the line.
 
 ## Installation
 
-The easitest way:
+The easiest way:
 ```bash
 pip install arcgis-rest-query
 ```
@@ -81,6 +81,59 @@ arcgis-get --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/arcgis/rest
 ```
 ![florida](https://cloud.githubusercontent.com/assets/20067/5001808/ee233ff6-69c7-11e4-9c3e-245aba847bb5.png)
 
-## Potential pitfalls:
+
+# API
+## Contstructor
+The ArcGIS() constructor takes only one argument, the URL to the web services endpoint you wish to query.
+```python
+>>> from arcgis import ArcGIS
+>>> service = ArcGIS("http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer")
+```
+## ArcGIS.get(layer[,where="1 = 1", fields=[], count_only=False, srid='4326'])
+
+Gets a single layer from the web service.
+
+```python
+>>> geojson = service.get(28)
+>>> only_florida = service.get(28, where="NAME = 'Florida'")
+>>> # Specifying the fields means we get only those fields in return
+>>> only_florida_shape = service.get(28, where="NAME = 'Florida'", fields=['OBJECTID'])
+```
+
+## ArcGIS.getMultiple(layers[, where="1 = 1", fields=[], srid='4326', layer_name_field=None])
+
+Concatenate multiple layers into one geojson. This is useful if you have a map with layers for, say, every year, named foo_2014, foo_2013, foo_2012, etc.
+
+```python
+>>> arcgis = ArcGIS("http://tigerweb.geo.census.gov/arcgis/rest/services/Census2010/Transportation/MapServer")
+>>> # Get any primary or secondary roads named after MLK Jr. and combine them.
+>>> mlk_roads = service.getMultiple([0,1], where="NAME LIKE '%Martin Luther King%'", layer_name_field="src_layer")
+```
+
+## ArcGIS.get_json(layer[, where="1 = 1", fields=[], count_only=False, srid='4326'])
+
+Returns the raw JSON from ArcGIS web services for the layer. This is not GeoJSON.
+
+```python
+>>> raw_json = service.get_json(0)
+```
+
+## ArcGIS.get_descriptor_for_layer(layer)
+
+Returns the JSON descriptor for the layer. This tells you things like what fields are in the layer, what sort of geometry it contains, etc. The response of this function is cached, so repeated calls to the same layer will not hit the ArcGIS web service.
+
+```python
+>>> descriptor = service.get_descriptor(0)
+```
+
+### ArcGIS.enumerate_layer_fields(layer)
+
+Returns a list of the field names in the layer. Useful for determining what you want to request in a .get() call.
+
+```python
+>>> field_list = service.enumerate_layer_fields(0)
+```
+
+## Potential pitfalls
 
 Since you can only query in batches of 1,000, and sometimes these are millions of records, these operations could take a long time. Currently there's no status indicator on the CLI, so run `--count_only` first to see how long you might wait.
