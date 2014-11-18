@@ -54,6 +54,12 @@ $ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legisl
 ```
 The utilitiy downloads in batches of 1000, so while this will only need to hit the API once, the resulting file would be rather large.
 
+You can also download multiple layers into the same file from the command line. For example, if you wanted to combine the Tennessee congressional districts for the 114th and 113th congress into the same file:
+
+```bash
+$ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer 0 12 --where="STATE = 47" --layer_name_field='source_layer' > ca_distrcits_2013_2014.geojson
+```
+
 # API
 ## Constructor
 The ArcGIS() constructor takes only one argument, the URL to the web services endpoint you wish to query.
@@ -126,21 +132,21 @@ If you install [geojsonio-cli](https://github.com/mapbox/geojsonio-cli/), you ca
 npm install -g geojsonio-cli
 ```
 
-Then, we could re-do the previous query:
+Then, we could re-do the query on Hawaii's congressional districts:
 
 ```bash
-arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 9 | geojsonio
+$ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer 0 --where="STATE = 15" | geojsonio
 ```
 
 And get some glorious mapped output: 
-![geojsonio-example](https://cloud.githubusercontent.com/assets/20067/4998565/6be2e4f8-69a7-11e4-8aa1-d735bd1a7dac.png)
+![hawaii](https://cloud.githubusercontent.com/assets/20067/5095404/85de3610-6f37-11e4-8658-d769a89590a9.png)
 
-You can also do WHERE filtering from the command line. For example, if you want to get the Census' state shape for just Florida
-and display it on geojson.io, you could do:
+Or, for example, if you want to get the Census' state shape for just Florida and display it on geojson.io, you could do:
 
 ```bash
 arcgis-get --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 28 | geojsonio
 ```
+
 ![florida](https://cloud.githubusercontent.com/assets/20067/5001808/ee233ff6-69c7-11e4-9c3e-245aba847bb5.png)
 
 # Potential pitfalls
