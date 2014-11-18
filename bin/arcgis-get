@@ -20,9 +20,6 @@ if __name__ == "__main__":
 
 	arc = arcgis.ArcGIS(args.url)
 
-	# The default getter function
-	fn = arc.get
-
 	if len(args.layer) > 1:
 		if args.count_only:
 			print "Sorry, you can't run a county on multiple layers currently."
