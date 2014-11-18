@@ -10,9 +10,9 @@ like GeoJSON.
 ```python
 >>> import arcgis
 >>> source = "http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Congressional_Districts/FeatureServer"
->>> arc = arcgis.ArcGIS(source)
+>>> service = arcgis.ArcGIS(source)
 >>> layer_id = 0
->>> shapes = arc.get(layer_id, "STATE_ABBR='IN'")
+>>> shapes = service.get(layer_id, "STATE_ABBR='IN'")
 ```
 
 This assumes you've inspected your ArcGIS services endpoint to know what to look for.
