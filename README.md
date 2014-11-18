@@ -100,14 +100,26 @@ Gets a single layer from the web service.
 >>> only_florida_shape = service.get(28, where="NAME = 'Florida'", fields=['OBJECTID'])
 ```
 
-## ArcGIS.getMultiple(layers[, where="1 = 1", fields=[], srid='4326', layer_name_field=None])
-
-Concatenate multiple layers into one geojson. This is useful if you have a map with layers for, say, every year, named foo_2014, foo_2013, foo_2012, etc.
+If count_only is specified, we return a simple count of the number of features in the layer you're querying. This is useful for determining how big of a query you're about to make, or if your WHERE filter is correct.
 
 ```python
->>> arcgis = ArcGIS("http://tigerweb.geo.census.gov/arcgis/rest/services/Census2010/Transportation/MapServer")
+>>> states_count = service.get(28, count_only=True)
+56
+>>> southeast_count = service.get(28, where="NAME IN ('Florida', 'Georgia', 'Alabama', 'South Carolina')", count_only=True)
+4
+```
+
+## ArcGIS.getMultiple(layers[, where="1 = 1", fields=[], srid='4326', layer_name_field=None])
+
+Concatenate multiple layers into one geojson. This is useful if you have a map with layers for, say, every year, named foo_2014, foo_2013, foo_2012, etc. Setting layer_name_field adds a field to every returned object specifying which layer it came from.
+
+```python
+>>> service = ArcGIS("http://tigerweb.geo.census.gov/arcgis/rest/services/Census2010/Transportation/MapServer")
 >>> # Get any primary or secondary roads named after MLK Jr. and combine them.
 >>> mlk_roads = service.getMultiple([0,1], where="NAME LIKE '%Martin Luther King%'", layer_name_field="src_layer")
+>>> # Inspect the src_layer field in the first returned feature.
+>>> mlk_roads.get('features')[0].get('properties').get('src_layer')
+u'Primary Roads'
 ```
 
 ## ArcGIS.get_json(layer[, where="1 = 1", fields=[], count_only=False, srid='4326'])
