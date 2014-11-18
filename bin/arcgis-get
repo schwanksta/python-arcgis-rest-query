@@ -8,7 +8,7 @@ if __name__ == "__main__":
 	parser.add_argument('url', type=str,
                    help='The full url to an ArcGIS web service')
 	parser.add_argument('layer', type=str, nargs='+',
-                   help='The layer id within the service. You can also use a comma-delimted list of layers and arcgis-get will return GeoJSON that contains all of the data in all of the layers.')
+                   help='The layer id or list of layer ids to download. In the case of multiple layers, arcgis-get will return GeoJSON that contains all of the data in all of the layers.')
 	parser.add_argument('--layer_name_field', type=str, default=None,
 					help="Every feature in the GeoJSON will contain the layer name it came from in the field named here.")
 	parser.add_argument('--where', type=str, default="1 = 1",
