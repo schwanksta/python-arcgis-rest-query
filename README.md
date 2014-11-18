@@ -57,7 +57,7 @@ The utilitiy downloads in batches of 1000, so while this will only need to hit t
 You can also download multiple layers into the same file from the command line. For example, if you wanted to combine the Tennessee congressional districts for the 114th and 113th congress into the same file:
 
 ```bash
-$ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer 0 12 --where="STATE = 47" --layer_name_field='source_layer' > ca_distrcits_2013_2014.geojson
+$ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer 0 12 --where="STATE = 47" --layer_name_field='source_layer' > tn_distrcits_2013_2014.geojson
 ```
 
 # API
