@@ -41,20 +41,18 @@ pip install -r requirements.txt
 
 You can also use the included arcgis-get utility, like so:
 
-*Note: this query will take a long time, so maybe try one of the other examples below?*
 ```bash
-arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 9 > ~/Desktop/railroads.geojson
+$ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer 0 --where="STATE = 15" > hawaii_congressional_districts.geojson
 ```
+This will download the 114th Congressional District shapes for Hawaii (FIPS ID is 15). We filter down in this example because there are a bunch of congressional districts, and it would take a while to download them all.
 
-This will download a Railroads layer from the US Census' TIGER dataset.
-
-The size of that file brings up a good point: you should run `--count_only` before downloading an entire dataset, so you can see what you're in store for. 
+You should run `--count_only` before downloading an entire dataset, so you can see what you're in store for. 
 
 ```bash
-$ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 9 --count_only
-182149
+$ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer 0 --count_only
+444
 ```
-Since we go in batches of 1,000, you're in for over 180 queries to the API.
+The utilitiy downloads in batches of 1000, so while this will only need to hit the API once, the resultying file would be rather large.
 
 # API
 ## Constructor
@@ -74,7 +72,7 @@ Gets a single layer from the web service.
 >>> only_florida_shape = service.get(28, where="NAME = 'Florida'", fields=['OBJECTID'])
 ```
 
-If count_only is specified, we return a simple count of the number of features in the layer you're querying. This is useful for determining how big of a query you're about to make, or if your WHERE filter is correct.
+If `count_only` is specified, we return a simple count of the number of features in the layer you're querying. This is useful for determining how big of a query you're about to make, or if your `WHERE` filter is correct.
 
 ```python
 >>> states_count = service.get(28, count_only=True)
@@ -83,9 +81,9 @@ If count_only is specified, we return a simple count of the number of features i
 4
 ```
 
-## ArcGIS.getMultiple(layers[, where="1 = 1", fields=[], srid='4326', layer_name_field=None])
+### ArcGIS.getMultiple(layers[, where="1 = 1", fields=[], srid='4326', layer_name_field=None])
 
-Concatenate multiple layers into one geojson. This is useful if you have a map with layers for, say, every year, named foo_2014, foo_2013, foo_2012, etc. Setting layer_name_field adds a field to every returned object specifying which layer it came from.
+Concatenate multiple layers into one geojson. This is useful if you have a map with layers for, say, every year, named foo_2014, foo_2013, foo_2012, etc. Setting `layer_name_field` adds a field to every returned object specifying which layer it came from.
 
 ```python
 >>> service = ArcGIS("http://tigerweb.geo.census.gov/arcgis/rest/services/Census2010/Transportation/MapServer")
@@ -96,7 +94,7 @@ Concatenate multiple layers into one geojson. This is useful if you have a map w
 u'Primary Roads'
 ```
 
-## ArcGIS.get_json(layer[, where="1 = 1", fields=[], count_only=False, srid='4326'])
+### ArcGIS.get_json(layer[, where="1 = 1", fields=[], count_only=False, srid='4326'])
 
 Returns the raw JSON from ArcGIS web services for the layer. This is not GeoJSON.
 
@@ -104,7 +102,7 @@ Returns the raw JSON from ArcGIS web services for the layer. This is not GeoJSON
 >>> raw_json = service.get_json(0)
 ```
 
-## ArcGIS.get_descriptor_for_layer(layer)
+### ArcGIS.get_descriptor_for_layer(layer)
 
 Returns the JSON descriptor for the layer. This tells you things like what fields are in the layer, what sort of geometry it contains, etc. The response of this function is cached, so repeated calls to the same layer will not hit the ArcGIS web service.
 
@@ -114,13 +112,13 @@ Returns the JSON descriptor for the layer. This tells you things like what field
 
 ### ArcGIS.enumerate_layer_fields(layer)
 
-Returns a list of the field names in the layer. Useful for determining what you want to request in a .get() call.
+Returns a list of the field names in the layer. Useful for determining what you want to request in a `.get()` call.
 
 ```python
 >>> field_list = service.enumerate_layer_fields(0)
 ```
 
-## Piping to geojsonio
+# Piping to geojsonio
 
 If you install [geojsonio-cli](https://github.com/mapbox/geojsonio-cli/), you can pipe output directly to a viewable map.
 
@@ -145,6 +143,6 @@ arcgis-get --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/arcgis/rest
 ```
 ![florida](https://cloud.githubusercontent.com/assets/20067/5001808/ee233ff6-69c7-11e4-9c3e-245aba847bb5.png)
 
-## Potential pitfalls
+# Potential pitfalls
 
 Since you can only query in batches of 1,000, and sometimes these are millions of records, these operations could take a long time. Currently there's no status indicator on the CLI, so run `--count_only` first to see how long you might wait.
