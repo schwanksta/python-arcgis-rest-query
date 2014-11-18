@@ -7,8 +7,10 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Output an ArcGIS web layer as GeoJSON")
 	parser.add_argument('url', type=str,
                    help='The full url to an ArcGIS web service')
-	parser.add_argument('layer', type=int,
-                   help='The layer id within the service. You can use a comma-delimted list of layers and arcgis-get will return GeoJSON that contains all of the data in all of the layers.')
+	parser.add_argument('layer', type=str, nargs='+',
+                   help='The layer id within the service. You can also use a comma-delimted list of layers and arcgis-get will return GeoJSON that contains all of the data in all of the layers.')
+	parser.add_argument('--layer_name_field', type=str, default=None,
+					help="Every feature in the GeoJSON will contain the layer name it came from in the field named here.")
 	parser.add_argument('--where', type=str, default="1 = 1",
 					help="A SQL-like WHERE clause to filter the data.")
 	parser.add_argument('--count_only', action='store_true',
@@ -21,12 +23,10 @@ if __name__ == "__main__":
 	# The default getter function
 	fn = arc.get
 
-	if ',' in args.layer:
+	if len(args.layer) > 1:
 		if args.count_only:
 			print "Sorry, you can't run a county on multiple layers currently."
 		else:
-			# If we have a list, we split it up and set the getter to getMultiple
-			args.layer = args.layer.split(',')
-			print json.dumps(arc.getMultiple(args.layer, where=args.where))
+			print json.dumps(arc.getMultiple(args.layer, where=args.where, layer_name_field=args.layer_name_field))
 	else:
-		print json.dumps(arc.get(args.layer, where=args.where, count_only=args.count_only))
+		print json.dumps(arc.get(args.layer[0], where=args.where, count_only=args.count_only))

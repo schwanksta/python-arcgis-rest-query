@@ -162,7 +162,7 @@ class ArcGIS:
         features = []
         for layer in layers:
             fields = fields or self.enumerate_layer_fields(layer)
-            this_layer = self.get(layer, where, fields, srid).get('features')
+            this_layer = self.get(layer, where, fields, False, srid).get('features')
             if layer_name_field:
                 descriptor = self.get_descriptor_for_layer(layer)
                 layer_name = descriptor.get('name')
