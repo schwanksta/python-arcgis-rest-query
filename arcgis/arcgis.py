@@ -77,7 +77,7 @@ class ArcGIS:
         """
         Gets the JSON file from ArcGIS
         """
-        return requests.get(self._build_query_request(layer),
+        response = requests.get(self._build_query_request(layer),
             params = {
                 'where': where,
                 'outFields': ", ".join(fields),
@@ -86,7 +86,8 @@ class ArcGIS:
                 'f': "pjson",
                 'orderByFields': "OBJECTID",
                 'returnCountOnly': count_only
-            }).json()
+            })
+        return response.json()
 
     def get_descriptor_for_layer(self, layer):
         """
@@ -161,8 +162,8 @@ class ArcGIS:
         """
         features = []
         for layer in layers:
-            fields = fields or self.enumerate_layer_fields(layer)
-            this_layer = self.get(layer, where, fields, False, srid).get('features')
+            get_fields = fields or self.enumerate_layer_fields(layer)
+            this_layer = self.get(layer, where, get_fields, False, srid).get('features')
             if layer_name_field:
                 descriptor = self.get_descriptor_for_layer(layer)
                 layer_name = descriptor.get('name')
