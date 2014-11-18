@@ -56,34 +56,8 @@ $ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/Commun
 ```
 Since we go in batches of 1,000, you're in for over 180 queries to the API.
 
-## Piping to geojsonio
-
-If you install [geojsonio-cli](https://github.com/mapbox/geojsonio-cli/), you can pipe output directly to a viewable map.
-
-```bash
-npm install -g geojsonio-cli
-```
-
-Then, we could re-do the previous query:
-
-```bash
-arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 9 | geojsonio
-```
-
-And get some glorious mapped output: 
-![geojsonio-example](https://cloud.githubusercontent.com/assets/20067/4998565/6be2e4f8-69a7-11e4-8aa1-d735bd1a7dac.png)
-
-You can also do WHERE filtering from the command line. For example, if you want to get the Census' state shape for just Florida
-and display it on geojson.io, you could do:
-
-```bash
-arcgis-get --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 28 | geojsonio
-```
-![florida](https://cloud.githubusercontent.com/assets/20067/5001808/ee233ff6-69c7-11e4-9c3e-245aba847bb5.png)
-
-
 # API
-## Contstructor
+## Constructor
 The ArcGIS() constructor takes only one argument, the URL to the web services endpoint you wish to query.
 ```python
 >>> from arcgis import ArcGIS
@@ -145,6 +119,31 @@ Returns a list of the field names in the layer. Useful for determining what you 
 ```python
 >>> field_list = service.enumerate_layer_fields(0)
 ```
+
+## Piping to geojsonio
+
+If you install [geojsonio-cli](https://github.com/mapbox/geojsonio-cli/), you can pipe output directly to a viewable map.
+
+```bash
+npm install -g geojsonio-cli
+```
+
+Then, we could re-do the previous query:
+
+```bash
+arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 9 | geojsonio
+```
+
+And get some glorious mapped output: 
+![geojsonio-example](https://cloud.githubusercontent.com/assets/20067/4998565/6be2e4f8-69a7-11e4-8aa1-d735bd1a7dac.png)
+
+You can also do WHERE filtering from the command line. For example, if you want to get the Census' state shape for just Florida
+and display it on geojson.io, you could do:
+
+```bash
+arcgis-get --where="NAME = 'Florida'" http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer 28 | geojsonio
+```
+![florida](https://cloud.githubusercontent.com/assets/20067/5001808/ee233ff6-69c7-11e4-9c3e-245aba847bb5.png)
 
 ## Potential pitfalls
 
