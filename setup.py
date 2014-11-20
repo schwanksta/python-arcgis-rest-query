@@ -2,9 +2,8 @@ import sys
 from setuptools import setup
 
 install_requires = [
-    "argparse==1.2.1",
-    "requests==2.4.3",
-    "wsgiref==0.1.2"
+    "argparse>=1.2.1",
+    "requests>=2.4.3"
 ]
 
 setup(
