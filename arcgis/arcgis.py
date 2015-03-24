@@ -134,8 +134,9 @@ class ArcGIS:
         # We always want to run once, and then break out as soon as we stop
         # getting exceededTransferLimit.
         while True:
+            print "."
             features += [self.esri_to_geojson(feat, geom_parser) for feat in jsobj.get('features')]
-            if jsobj.get('exceededTransferLimit'):
+            if jsobj.get('exceededTransferLimit') == True:
                 break
             # If we've hit the transfer limit we offset by the last OBJECTID
             # returned and keep moving along. 
