@@ -175,11 +175,11 @@ class ArcGIS:
             'features': features
         }
 
-    def validate_json(self, filename, data="json_query"):
+    def validate_geojson(self, filename, data="geojson_query"):
         good_request = requests.post("http://geojsonlint.com/validate", data).__str__()
         if good_request == "<Response [200]>":
             f = open(filename, "w")
-            f.write(json_query)
+            f.write(data)
             f.close()
         else:
             print "The GeoJSON gathered from the specified layer is invalid."
