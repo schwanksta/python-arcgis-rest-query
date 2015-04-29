@@ -87,7 +87,7 @@ class ArcGIS:
                 'orderByFields': "OBJECTID",
                 'returnCountOnly': count_only
             })
-        return response.json()
+        return response.json(strict=False)
 
     def get_descriptor_for_layer(self, layer):
         """
@@ -175,6 +175,14 @@ class ArcGIS:
             'features': features
         }
 
+    def validate_geojson(self, filename, data="geojson_query"):
+        good_request = requests.post("http://geojsonlint.com/validate", data).__str__()
+        if good_request == "<Response [200]>":
+            f = open(filename, "w")
+            f.write(data)
+            f.close()
+        else:
+            print "The GeoJSON gathered from the specified layer is invalid."
 
 def urljoin(*args):
     """
