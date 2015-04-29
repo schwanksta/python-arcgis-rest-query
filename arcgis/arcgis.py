@@ -87,7 +87,7 @@ class ArcGIS:
                 'orderByFields': "OBJECTID",
                 'returnCountOnly': count_only
             })
-        return response.json()
+        return response.json(strict=False)
 
     def get_descriptor_for_layer(self, layer):
         """
