@@ -20,9 +20,11 @@ class ArcGIS:
     could be possible further down the line.
 
     """
-    def __init__(self, url):
+    def __init__(self, url, geom_type=None, object_id_field="OBJECTID"):
         self.url=url
+        self.object_id_field=object_id_field
         self._layer_descriptor_cache = {}
+        self.geom_type=geom_type
         self._geom_parsers = {
             'esriGeometryPoint': self._parse_esri_point,
             'esriGeometryMultipoint': self._parse_esri_multipoint,
@@ -77,16 +79,18 @@ class ArcGIS:
         """
         Gets the JSON file from ArcGIS
         """
-        response = requests.get(self._build_query_request(layer),
-            params = {
+        params = {
                 'where': where,
                 'outFields': ", ".join(fields),
                 'returnGeometry': True,
                 'outSR': srid,
                 'f': "pjson",
-                'orderByFields': "OBJECTID",
+                'orderByFields': self.object_id_field,
                 'returnCountOnly': count_only
-            })
+            }
+        if self.geom_type:
+            params.update({'geometryType': self.geom_type})
+        response = requests.get(self._build_query_request(layer), params=params)
         return response.json()
 
     def get_descriptor_for_layer(self, layer):
@@ -139,7 +143,7 @@ class ArcGIS:
                 break
             # If we've hit the transfer limit we offset by the last OBJECTID
             # returned and keep moving along. 
-            where = "OBJECTID > %s" % features[-1]['properties'].get('OBJECTID')
+            where = "%s > %s" % (self.object_id_field, features[-1]['properties'].get(self.object_id_field))
             if base_where != "1 = 1" :
                 # If we have another WHERE filter we needed to tack that back on.
                 where += " AND %s" % base_where

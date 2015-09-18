@@ -13,17 +13,23 @@ if __name__ == "__main__":
 					help="Every feature in the GeoJSON will contain the layer name it came from in the field named here.")
 	parser.add_argument('--where', type=str, default="1 = 1",
 					help="A SQL-like WHERE clause to filter the data.")
+	parser.add_argument('--fields', type=str, nargs='+', default="*",
+                   help='A field or list of fields to download only. This is useful if you only need a small subset of a large dataset. You can set this to just those fields to pare down on download time and file size. Note that if you use this option, you MUST include OBJECTID as a field.')
+	parser.add_argument('--object_id_field', type=str, default="OBJECTID",
+					help="If your layer uses a non-standard OBJECTID field (it happens!) you must set it here.")
+	parser.add_argument('--geom_type', type=str, default=None,
+					help="Sometimes you need to be explicit about the geometry type you are returning. Must be one of esriGeometryPoint, esriGeometryMultiPoint, esriGeometryPolygon, esriGeometryMultiPoint.")
 	parser.add_argument('--count_only', action='store_true',
 					help="Returns only a count of the features that will be returned")
 
 	args = parser.parse_args()
 
-	arc = arcgis.ArcGIS(args.url)
+	arc = arcgis.ArcGIS(args.url, geom_type=args.geom_type, object_id_field=args.object_id_field)
 
 	if len(args.layer) > 1:
 		if args.count_only:
 			print "Sorry, you can't run a count on multiple layers currently."
 		else:
-			print json.dumps(arc.getMultiple(args.layer, where=args.where, layer_name_field=args.layer_name_field))
+			print json.dumps(arc.getMultiple(args.layer, where=args.where, fields=args.fields, layer_name_field=args.layer_name_field))
 	else:
-		print json.dumps(arc.get(args.layer[0], where=args.where, count_only=args.count_only))
+		print json.dumps(arc.get(args.layer[0], where=args.where, fields=args.fields, count_only=args.count_only))
