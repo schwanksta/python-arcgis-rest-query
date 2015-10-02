@@ -1,7 +1,7 @@
 [![PyPI version](https://badge.fury.io/py/arcgis-rest-query.svg)](http://badge.fury.io/py/arcgis-rest-query) ![travis-ci status](https://travis-ci.org/Schwanksta/python-arcgis-rest-query.svg?branch=master)
-# ArcGIS REST Query 
+# ArcGIS REST Query
 
-A simple library that can download a layer from a map in an 
+A simple library that can download a layer from a map in an
 ArcGIS web service and convert it to something useful,
 like GeoJSON.
 
@@ -46,7 +46,7 @@ $ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legisl
 ```
 This will download the 114th Congressional District shapes for Hawaii (FIPS ID is 15). We filter down in this example because there are a bunch of congressional districts, and it would take a while to download them all.
 
-You should run `--count_only` before downloading an entire dataset, so you can see what you're in store for. 
+You should run `--count_only` before downloading an entire dataset, so you can see what you're in store for.
 
 ```bash
 $ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer 0 --count_only
@@ -62,11 +62,27 @@ $ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legisl
 
 # API
 ## Constructor
-The ArcGIS() constructor takes only one argument, the URL to the web services endpoint you wish to query.
+The ArcGIS() constructor takes only one required argument, the URL to the web services endpoint you wish to query.
 ```python
 >>> from arcgis import ArcGIS
 >>> service = ArcGIS("http://tigerweb.geo.census.gov/arcgis/rest/services/Basemaps/CommunityTIGER/MapServer")
 ```
+
+### Authenticating requests to your ArcGIS server
+If your ArcGIS endpoint is protected via token authorization, pass a valid username/password to the constructor
+to validate your requests via token auth:
+
+```python
+>>> import os
+>>> from arcgis import ArcGIS
+>>> username = os.getenv('ARCGIS_USERNAME', None)
+>>> password = os.getenv('ARCGIS_PASSWORD', None)
+>>> service = ArcGIS("http://hostname/to/token/auth/featureServer",
+                     username=username,
+                     password=password)
+```
+You can then continue making requests as detailed below.
+
 ## ArcGIS.get(layer[,where="1 = 1", fields=[], count_only=False, srid='4326'])
 
 Gets a single layer from the web service.
@@ -138,7 +154,7 @@ Then, we could re-do the query on Hawaii's congressional districts:
 $ arcgis-get http://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Legislative/MapServer 0 --where="STATE = 15" | geojsonio
 ```
 
-And get some glorious mapped output: 
+And get some glorious mapped output:
 ![hawaii](https://cloud.githubusercontent.com/assets/20067/5095404/85de3610-6f37-11e4-8658-d769a89590a9.png)
 
 Or, for example, if you want to get the Census' state shape for just Florida and display it on geojson.io, you could do:

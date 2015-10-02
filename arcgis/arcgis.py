@@ -1,9 +1,10 @@
 import json
 import requests
+import os
 
 class ArcGIS:
     """
-    A class that can download a layer from a map in an 
+    A class that can download a layer from a map in an
     ArcGIS web service and convert it to something useful,
     like GeoJSON.
 
@@ -20,7 +21,9 @@ class ArcGIS:
     could be possible further down the line.
 
     """
-    def __init__(self, url, geom_type=None, object_id_field="OBJECTID"):
+    def __init__(self, url, geom_type=None, object_id_field="OBJECTID",
+                 username=None, password=None,
+                 token_url='https://www.arcgis.com/sharing/rest/generateToken'):
         self.url=url
         self.object_id_field=object_id_field
         self._layer_descriptor_cache = {}
@@ -31,6 +34,11 @@ class ArcGIS:
             'esriGeometryPolyline': self._parse_esri_polyline,
             'esriGeometryPolygon': self._parse_esri_polygon
         }
+
+        self.username = username
+        self.password = password
+        self.token_url = token_url
+        self._token = None
 
     def _build_request(self, layer):
         return urljoin(self.url, layer)
@@ -57,14 +65,14 @@ class ArcGIS:
         return {
             "type": "MultiLineString",
             "coordinates": geom.get('paths')
-        }    
+        }
 
     def _parse_esri_polygon(self, geom):
         return {
             "type": "Polygon",
             "coordinates": geom.get('rings')
         }
- 
+
     def _determine_geom_parser(self, type):
         return self._geom_parsers.get(type)
 
@@ -88,6 +96,8 @@ class ArcGIS:
                 'orderByFields': self.object_id_field,
                 'returnCountOnly': count_only
             }
+        if self.token:
+            params['token'] = self.token
         if self.geom_type:
             params.update({'geometryType': self.geom_type})
         response = requests.get(self._build_query_request(layer), params=params)
@@ -99,7 +109,10 @@ class ArcGIS:
         usefule information in there.
         """
         if not self._layer_descriptor_cache.has_key(layer):
-            response = requests.get(self._build_request(layer), params={'f': 'pjson'})
+            params = {'f': 'pjson'}
+            if self.token:
+                params['token'] = self.token
+            response = requests.get(self._build_request(layer), params=params)
             self._layer_descriptor_cache[layer] = response.json()
         return self._layer_descriptor_cache[layer]
 
@@ -115,13 +128,13 @@ class ArcGIS:
         Gets a layer and returns it as honest to God GeoJSON.
 
         WHERE 1 = 1 causes us to get everything. We use OBJECTID in the WHERE clause
-        to paginate, so don't use OBJECTID in your WHERE clause unless you're going to 
+        to paginate, so don't use OBJECTID in your WHERE clause unless you're going to
         query under 1000 objects.
         """
         base_where = where
         # By default we grab all of the fields. Technically I think
-        # we can just do "*" for all fields, but I found this was buggy in 
-        # the KMZ mode. I'd rather be explicit. 
+        # we can just do "*" for all fields, but I found this was buggy in
+        # the KMZ mode. I'd rather be explicit.
         fields = fields or self.enumerate_layer_fields(layer)
 
         jsobj = self.get_json(layer, where, fields, count_only, srid)
@@ -138,11 +151,12 @@ class ArcGIS:
         # We always want to run once, and then break out as soon as we stop
         # getting exceededTransferLimit.
         while True:
+            import ipdb; ipdb.set_trace()
             features += [self.esri_to_geojson(feat, geom_parser) for feat in jsobj.get('features')]
             if jsobj.get('exceededTransferLimit', False) == False:
                 break
             # If we've hit the transfer limit we offset by the last OBJECTID
-            # returned and keep moving along. 
+            # returned and keep moving along.
             where = "%s > %s" % (self.object_id_field, features[-1]['properties'].get(self.object_id_field))
             if base_where != "1 = 1" :
                 # If we have another WHERE filter we needed to tack that back on.
@@ -178,6 +192,36 @@ class ArcGIS:
             'type': "FeatureCollection",
             'features': features
         }
+
+    @property
+    def token(self):
+        if self._token is None and self.username and self.password:
+            token_params = {
+                'f': 'json',
+                'username': self.username,
+                'password': self.password,
+                'expiration': 60,
+                'client': 'referer',
+                'referer': 'http://www.arcgis.com',
+            }
+            try:
+                response = requests.post(self.token_url, data=token_params).json()
+                self._token = response['token']
+            except requests.exceptions.Timeout:
+                print('Connection to {0} timed out'.format(self.token_url))
+                raise
+            except requests.exceptions.ConnectionError:
+                print('Unable to connect to host at {0}'.format(self.token_url))
+                raise
+            except requests.exceptions.URLRequired:
+                print('Invalid URL - {0}'.format(self.token_url))
+                raise
+            except KeyError:
+                print('Error retrieving token - {0}'.format(response))
+                raise
+
+        return self._token
+
 
 
 def urljoin(*args):
