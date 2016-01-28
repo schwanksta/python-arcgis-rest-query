@@ -8,7 +8,7 @@ install_requires = [
 
 setup(
     name='arcgis-rest-query',
-    version='0.11',
+    version='0.2',
     description='A tool to download a layer from an ArcGIS web service as GeoJSON',
     author='Ken Schwencke',
     author_email='schwank@gmail.com',
