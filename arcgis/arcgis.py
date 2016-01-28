@@ -173,6 +173,10 @@ class ArcGIS:
         }
 
     def getTable(self, layer, where="1 = 1", fields=[], jsobj=None):
+        """
+        Returns JSON for a Table type. You shouldn't use this directly -- it's
+        an automatic falback from .get if there is no geometry
+        """
         base_where = where
         features = []
         # We always want to run once, and then break out as soon as we stop
