@@ -183,11 +183,12 @@ class ArcGIS:
         # getting exceededTransferLimit.
         while True:
             features += [feat.get('attributes') for feat in jsobj.get('features')]
-            if jsobj.get('exceededTransferLimit', False) == False:
+            # There isn't an exceededTransferLimit?
+            if len(jsobj.get('features')) < 1000:
                 break
             # If we've hit the transfer limit we offset by the last OBJECTID
             # returned and keep moving along.
-            where = "%s > %s" % (self.object_id_field, features[-1]['properties'].get(self.object_id_field))
+            where = "%s > %s" % (self.object_id_field, features[-1].get(self.object_id_field))
             if base_where != "1 = 1" :
                 # If we have another WHERE filter we needed to tack that back on.
                 where += " AND %s" % base_where
