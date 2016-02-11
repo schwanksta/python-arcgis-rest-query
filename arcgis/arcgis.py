@@ -80,7 +80,7 @@ class ArcGIS:
         return {
             "type": "Feature",
             "properties": obj.get('attributes'),
-            "geometry": geom_parser(obj.get('geometry'))
+            "geometry": geom_parser(obj.get('geometry')) if obj.get('geometry') else None
         }
 
     def get_json(self, layer, where="1 = 1", fields=[], count_only=False, srid='4326'):
