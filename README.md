@@ -2,7 +2,7 @@
 # ArcGIS REST Query
 
 A simple library that can download a layer from a map in an 
-ArcGIS web service and convert it to something useful: GeoJSON.
+ArcGIS web service and convert it to something useful: GeoJSON. If this doesn't suit you , try [pyesridump](https://github.com/openaddresses/pyesridump).
 
 ## Usage
 
