@@ -108,7 +108,7 @@ class ArcGIS:
         Returns the standard JSON descriptor for the layer. There is a lot of
         usefule information in there.
         """
-        if not self._layer_descriptor_cache.has_key(layer):
+        if not layer in self._layer_descriptor_cache:
             params = {'f': 'pjson'}
             if self.token:
                 params['token'] = self.token

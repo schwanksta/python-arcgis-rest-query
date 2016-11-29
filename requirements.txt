@@ -4,4 +4,4 @@ coverage==3.7.1
 coveralls==0.4.4
 docopt==0.6.2
 requests==2.4.3
-wsgiref==0.1.2
+wsgiref==0.1.2 ; python_version < '3.0'
