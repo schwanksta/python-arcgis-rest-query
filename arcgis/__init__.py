@@ -1,2 +1,2 @@
 __all__ = ['ArcGIS']
-from arcgis.arcgis import ArcGIS
+from .arcgis import ArcGIS
